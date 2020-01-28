@@ -1,0 +1,216 @@
+<html>
+   <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" media="screen" href="artiststats_files/index.css">
+      <link rel="stylesheet" type="text/css" href="artiststats_files/stylesheet.css">
+      <meta charset="utf-8">
+   </head>
+   <body>
+      <fieldset>
+         <legend>Artist Stats - Heavily readapted from code by <a href="https://spooky-ghostwriter.tumblr.com">spooky-ghostwriter</a></legend>
+         <img id="stats" src="artiststats_files/artist_stats.png" alt="Artist Stats" width="0" height="0">
+         <br>
+         <p style="float:left;margin-right:10px;">
+            <br><br><br>
+            Gesture:
+            <input type="range" name="slider_one" id="slider_one" value="3" min="0" max="6" oninput="drawStats()">
+            <br>
+            Construction:
+            <input type="range" name="slider_two" id="slider_two" value="3" min="0" max="6" oninput="drawStats()">
+            <br>
+            Perspective:
+            <input type="range" name="slider_three" id="slider_three" value="3" min="0" max="6" oninput="drawStats()">
+            <br>
+            Color / Value:
+            <input type="range" name="slider_four" id="slider_four" value="3" min="0" max="6" oninput="drawStats()">
+            <br>
+            Design / Rendering:
+            <input type="range" name="slider_five" id="slider_five" value="3" min="0" max="6" oninput="drawStats()">
+            <br>
+            Composition:
+            <input type="range" name="slider_six" id="slider_six" value="3" min="0" max="6" oninput="drawStats()">
+            <br>
+         </p>
+         <p style="float:right;">
+            <canvas id="myCanvas" width="300" height="300">
+               Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <br>
+            <input type="color" id="colour_radar" oninput="drawStats()" style="float:right;" value="#ff0000">
+            <input type="checkbox" id="transparent_colour" onclick="drawStats()">Transparent colour
+         </p>
+      </fieldset>
+      <!--
+         <b>Updates!</b>
+         <ul>
+         <li>Sliders now change the chart before you let go of them</li>
+         <li>Added a colour picker</li>
+         <li>Added randomize buttons</li>
+         <li>Added a transparent colour checkbox</li>
+         </ul>
+         -->
+      <script src="artiststats_files/index.js"></script>
+      <script>
+         var img=document.getElementById("stats");  
+
+         var OneX = [150,150,150,150,150,150,150];
+         var OneY = [150,135,121,107,91,77,64];
+         
+         var TwoX = [150,163,175,188,201,213,224];
+         var TwoY = [150,143,135,128,121,114,107];
+         
+         var ThreeX = [150,163,175,188,201,213,224];
+         var ThreeY = [150,157,165,172,179,186,193];
+         
+         var FourX = [150,150,150,150,150,150,150];
+         var FourY = [150,165,179,193,209,223,236];
+         
+         var FiveX = [150,136,125,112,99,87,76];
+         var FiveY = [150,157,165,172,179,186,193];
+         
+         var SixX = [150,136,125,112,99,87,76];
+         var SixY = [150,143,135,128,121,114,107];
+         
+         var ranks = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
+         
+         var OneTextPos=[142,56];
+         var TwoTextPos=[229,105.5];
+         var ThreeTextPos=[229,210.5];
+         var FourTextPos=[142,259];
+         var FiveTextPos=[53,210.5];
+         var SixTextPos=[53,105.5];
+         
+         var NONE_MODIFIERS=[-5,-8,-10,-10,-10,-10];
+         var modifier=0;
+         
+         window.onload = function() {
+           var c=document.getElementById("myCanvas");
+           var ctx=c.getContext("2d");
+           var canvas = document.getElementById('myCanvas');
+           var context = canvas.getContext('2d');
+         
+         /*
+           context.beginPath();
+           context.rect(0, 0, 200, 100);
+           context.fillStyle = 'yellow';
+           context.fill();
+           context.lineWidth = 1;
+           context.strokeStyle = 'black';
+           context.stroke();
+         */
+           drawStats();
+         }
+         
+         function redrawGraph(ctx,canvas) {
+         	ctx.globalAlpha = 1.0
+         	ctx.drawImage(img,0,0, canvas.width, canvas.height);
+         }
+         
+         function drawPolygon(ctx,one,two,three,four,five,six) {
+         
+         	if (document.getElementById("transparent_colour").checked)
+         	{
+         		ctx.globalAlpha = 0.5
+         	}
+         	ctx.fillStyle = document.getElementById("colour_radar").value;
+         	ctx.beginPath();
+         	ctx.moveTo(OneX[one],OneY[one]);
+         	ctx.lineTo(TwoX[two],TwoY[two]);
+         	ctx.lineTo(ThreeX[three],ThreeY[three]);
+         	ctx.lineTo(FourX[four],FourY[four]);
+         	ctx.lineTo(FiveX[five],FiveY[five]);
+         	ctx.lineTo(SixX[six],SixY[six]);
+         	ctx.closePath();
+         	ctx.fill();
+         }
+         
+         function getSText()
+         {
+         	return 'S';
+         }
+         
+         function writeText(ctx,one,two,three,four,five,six) {
+         	ctx.globalAlpha = 1.0
+         	ctx.font="bold 24px Arial";
+         	ctx.fillStyle = '#000';
+         	
+         	var oneText=ranks[one];
+         	var twoText=ranks[two];
+         	var threeText=ranks[three];
+         	var fourText=ranks[four];
+         	var fiveText=ranks[five];
+         	var sixText=ranks[six];
+         	
+         	regenerateModifier();
+         	ctx.fillText(oneText,OneTextPos[0]+modifier,OneTextPos[1]);
+         	
+         	regenerateModifier();
+         	ctx.fillText(twoText,TwoTextPos[0]+modifier,TwoTextPos[1]);
+         	
+         	regenerateModifier();
+         	ctx.fillText(threeText,ThreeTextPos[0]+modifier,ThreeTextPos[1]);
+         	
+         	regenerateModifier();
+         	ctx.fillText(fourText,FourTextPos[0]+modifier,FourTextPos[1]);
+         	
+         	regenerateModifier();
+         	ctx.fillText(fiveText,FiveTextPos[0]+modifier,FiveTextPos[1]);
+         	
+         	regenerateModifier();
+         	ctx.fillText(sixText,SixTextPos[0]+modifier,SixTextPos[1]);
+         }
+         
+         function drawStats() {
+         	var canvas = document.getElementById('myCanvas');
+         	var ctx = canvas.getContext('2d');
+         	
+         	// Clear the canvas
+         	ctx.clearRect(0, 0, canvas.width, canvas.height);
+         	
+         	// Get all the values
+         	var oneSlider = document.getElementById("slider_one");
+         	var one = oneSlider.value;
+         	
+         	var twoSlider = document.getElementById("slider_two");
+         	var two = twoSlider.value;
+         	
+         	var threeSlider = document.getElementById("slider_three");
+         	var three = threeSlider.value;
+         	
+         	var fourSlider = document.getElementById("slider_four");
+         	var four = fourSlider.value;
+         		
+         	var fiveSlider = document.getElementById("slider_five");
+         	var five = fiveSlider.value;
+         	
+         	var sixSlider = document.getElementById("slider_six");
+         	var six = sixSlider.value;
+         	
+         	if (document.getElementById("transparent_colour").checked)
+         	{
+         		redrawGraph(ctx,canvas);
+         		drawPolygon(ctx,one,two,three,four,five,six);
+         		writeText(ctx,one,two,three,four,five,six);
+         	}
+         	else
+         	{
+         		drawPolygon(ctx,one,two,three,four,five,six);
+         		redrawGraph(ctx,canvas);
+         		writeText(ctx,one,two,three,four,five,six);
+         	}
+         }
+         
+         function regenerateModifier(smallText,index) {
+         	var canvas = document.getElementById('myCanvas');
+         	var ctx = canvas.getContext('2d');
+         	modifier=0;
+         	ctx.font="bold 24px Arial";
+         	if (smallText)
+         	{
+         		ctx.font="bold 12px Arial";
+         		modifier=NONE_MODIFIERS[index];
+         	}
+         }
+      </script>
+   </body>
+</html>
